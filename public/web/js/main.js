@@ -205,19 +205,6 @@
 })(jQuery);
 
 $(document).ready(function() {
-	//Validación para introducir solo números
-	$('.number, .phone, #dni').keypress(function() {
-		return event.charCode >= 48 && event.charCode <= 57;
-	});
-    //Validación para introducir solo letras y espacios
-    $('#name, #lastname').keypress(function() {
-    	return event.charCode >= 65 && event.charCode <= 90 || event.charCode >= 97 && event.charCode <= 122 || event.charCode==32;
-    });
-    //Validación para solo presionar enter y borrar
-    $('.date').keypress(function() {
-    	return event.charCode == 32 || event.charCode == 127;
-    });
-
 	//multiselect
 	if ($('.multiselect').length) {
 		$('.multiselect').select2({
@@ -225,63 +212,61 @@ $(document).ready(function() {
 			language: "es"
 		});
 	}
+});
 
-	//Variables con fecha actual
-	var mayor=new Date();
-	//Restandole 18 años a la fecha actual
-	mayor.setMonth(mayor.getMonth() - 216);
+$('select[name="category"]').change(function(event) {
+	selected=$('select[name="category"] option:selected');
 
-	//datepicker material
-	if ($('.date').length) {
-		$('.date').bootstrapMaterialDatePicker({
-			time: false,
-			cancelText: 'Cancelar',
-			clearText: 'Limpiar',
-			format: 'DD-MM-YYYY',
-			maxDate : mayor
-		});
-	}
+	$('select[name="filter"] option, select[name="subcategory"] option, #alert').addClass('d-none');
+	$('select[name="filter"] option[value=""], select[name="subcategory"] option[value=""]').removeClass('d-none');
+	$('select[name="filter"], select[name="subcategory"]').val('');
+	$('select[name="filter"], select[name="subcategory"], #btn-extract').attr('disabled', true);
 
-	//datatable español
-	var español = {
-		"sProcessing":     "Procesando...",
-		"sLengthMenu":     "Mostrar _MENU_ registros",
-		"sZeroRecords":    "No se encontraron resultados",
-		"sEmptyTable":     "Ningún resultado disponible en esta tabla",
-		"sInfo":           "Resultados del _START_ al _END_ de un total de _TOTAL_ registros",
-		"sInfoEmpty":      "No hay resultados",
-		"sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
-		"sInfoPostFix":    "",
-		"sSearch":         "Buscar :",
-		"sUrl":            "",
-		"sInfoThousands":  ",",
-		"sLoadingRecords": "Cargando...",
-		"oPaginate": {
-			"sFirst":    "Primero",
-			"sLast":     "Último",
-			"sNext":     "Siguiente",
-			"sPrevious": "Anterior"
-		},
-		"oAria": {
-			"sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
-			"sSortDescending": ": Activar para ordenar la columna de manera descendente"
+	if (selected.val()!="") {
+		var category=selected.attr('category'), withFilters=selected.attr('withFilters'), withSubcategories=selected.attr('withSubcategories');
+		if (withFilters) {
+			$('select[name="filter"] option[category="'+category+'"]').removeClass('d-none');
+			$('select[name="filter"]').attr('disabled', false);
+		} else {
+			if (withSubcategories) {
+				$('#message-info').text('Esta categoría no posee filtros, selecciona la subcategoría de la cual quieres extraer los datos.');
+				$('#alert').removeClass('d-none');
+				$('select[name="subcategory"] option[category="'+category+'"]').removeClass('d-none');
+				$('select[name="subcategory"]').attr('disabled', false);
+			} else {
+				$('#message-info').text('Esta categoría no posee filtros ni subcategorías, puedes extraer los datos directamente de la categoría');
+				$('#alert').removeClass('d-none');
+				$('#btn-extract').attr('disabled', false);
+			}
 		}
 	}
+});
 
-	//datatable normal
-	if ($('#tabla').length) {
-		$('#tabla').DataTable({
-			"language": español
+$('select[name="filter"]').change(function(event) {
+	selected=$('select[name="filter"] option:selected');
+
+	$('select[name="subcategory"] option, #alert').addClass('d-none');
+	$('select[name="subcategory"] option[value=""]').removeClass('d-none');
+	$('select[name="subcategory"]').val('');
+	$('select[name="subcategory"], #btn-extract').attr('disabled', true);
+
+	if (selected.val()!="") {
+		var category=selected.attr('category'), filter=selected.val();
+		$('select[name="subcategory"] option[category="'+category+'"]').each(function(index, el) {
+			if ($(this).attr('filter')==filter) {
+				$(this).removeClass('d-none');
+			}
 		});
+		$('select[name="subcategory"]').attr('disabled', false);
 	}
+});
 
-	//touchspin para los campos numericos
-	if ($('.number').length) {
-		$(".number").TouchSpin({
-			min: 1,
-			max: 99999999999,
-			buttondown_class: 'btn btn-primary rounded',
-			buttonup_class: 'btn btn-primary rounded'
-		});
+$('select[name="subcategory"]').change(function(event) {
+	selected=$('select[name="subcategory"] option:selected');
+	$('#alert').addClass('d-none');
+	$('#btn-extract').attr('disabled', true);
+
+	if (selected.val()!="") {
+		$('#btn-extract').attr('disabled', false);
 	}
 });

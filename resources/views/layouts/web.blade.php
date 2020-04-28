@@ -9,7 +9,7 @@
 
 	<link rel="stylesheet" href="{{ asset('/web/css/open-iconic-bootstrap.min.css') }}">
 	<link rel="stylesheet" href="{{ asset('/web/css/animate.css') }}">
-	<link rel="stylesheet" href="{{ asset('/admins/vendors/lobibox/Lobibox.min.css') }}">
+	<link rel="stylesheet" href="{{ asset('/web/vendors/lobibox/Lobibox.min.css') }}">
 
 	<link rel="stylesheet" href="{{ asset('/web/css/ionicons.min.css') }}">
 	<link rel="stylesheet" href="{{ asset('/web/css/flaticon.css') }}">

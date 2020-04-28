@@ -15,3 +15,4 @@
 
 // inicio
 Route::get('/', 'AdminController@index')->name('home');
+Route::post('/scraping', 'AdminController@scraping')->name('scraping');
